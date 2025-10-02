@@ -1,103 +1,95 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import Desktop from '@/lib/components/Desktop';
+import Dock from '@/lib/components/Dock';
+import Window from '@/lib/components/Window';
+import Launchpad from '@/lib/components/Launchpad';
+import { useWindowStore } from '@/lib/stores/windowStore';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [isLaunchpadOpen, setIsLaunchpadOpen] = useState(false);
+  const { windows, addWindow, isAppRunning, isAppMinimized } = useWindowStore();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      document.title = "Home | Your Portfolio";
+      if (window.innerWidth >= 768) {
+        addWindow("terminal");
+      }
+    }
+  }, [addWindow]);
+
+  const handleOpenLaunchpad = () => {
+    setIsLaunchpadOpen(true);
+  };
+
+  const handleLaunchApp = (appType: string) => {
+    addWindow(appType as "terminal" | "safari" | "photos" | "blog" | "projects" | "github" | "music");
+    setIsLaunchpadOpen(false);
+  };
+
+  const [wallpapers, setWallpapers] = useState<string[]>([]);
+  const [wallpaperIndex, setWallpaperIndex] = useState(0);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch('/api/wallpapers');
+        const data = await res.json();
+        if (Array.isArray(data.wallpapers) && data.wallpapers.length) {
+          setWallpapers(data.wallpapers);
+          setWallpaperIndex(0);
+        } else {
+          setWallpapers(['/wallpapers/wallpaper-1.png', '/wallpapers/wallpaper-2.png']);
+        }
+      } catch (e) {
+        setWallpapers(['/wallpapers/wallpaper-1.png', '/wallpapers/wallpaper-2.png']);
+      }
+    };
+    load();
+  }, []);
+
+  const nextWallpaper = () => setWallpaperIndex((prev) => (prev + 1) % wallpapers.length);
+  const prevWallpaper = () => setWallpaperIndex((prev) => (prev - 1 + wallpapers.length) % wallpapers.length);
+
+  return (
+    <main className="min-h-screen font-mono relative overflow-hidden">
+      {/* Wallpaper Background */}
+      <div
+        className="absolute inset-0 z-0 bg-cover bg-center"
+        style={{ backgroundImage: wallpapers.length ? `url(${wallpapers[wallpaperIndex]})` : undefined }}
+      />
+
+      <div className="relative z-20">
+        <Desktop />
+      
+        {windows.map((window) => (
+          <Window key={window.id} window={window} />
+        ))}
+        
+        <Dock 
+          isAppRunning={isAppRunning} 
+          isAppMinimized={isAppMinimized} 
+          addWindow={addWindow} 
+          onOpenLaunchpad={handleOpenLaunchpad} 
+        />
+        
+        <Launchpad 
+          isOpen={isLaunchpadOpen} 
+          onLaunchApp={handleLaunchApp} 
+          onCloseLaunchpad={() => setIsLaunchpadOpen(false)} 
+        />
+
+        {/* Wallpaper Switcher */}
+        {wallpapers.length > 1 && (
+          <div className="fixed bottom-6 right-6 z-30 flex items-center space-x-2 bg-black/40 text-white backdrop-blur-md px-3 py-2 rounded-full border border-white/20">
+            <button onClick={prevWallpaper} className="px-2 py-1 hover:text-blue-200">Prev</button>
+            <div className="text-xs opacity-80">{wallpaperIndex + 1}/{wallpapers.length}</div>
+            <button onClick={nextWallpaper} className="px-2 py-1 hover:text-blue-200">Next</button>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }

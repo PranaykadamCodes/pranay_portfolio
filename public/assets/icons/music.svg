@@ -1,0 +1,15 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="musicGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FA233B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF6B6B;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- App icon background -->
+  <rect width="512" height="512" rx="90" ry="90" fill="url(#musicGradient)"/>
+  
+  <!-- Musical note symbol -->
+  <path d="M359.5 96.5C359.5 86.835 351.665 79 342 79C332.335 79 324.5 86.835 324.5 96.5V295.5C324.5 326.327 299.827 351 269 351C238.173 351 213.5 326.327 213.5 295.5C213.5 264.673 238.173 240 269 240C280.046 240 290.346 243.654 298.5 249.5V160.5L189.5 185.5V335.5C189.5 366.327 164.827 391 134 391C103.173 391 78.5 366.327 78.5 335.5C78.5 304.673 103.173 280 134 280C145.046 280 155.346 283.654 163.5 289.5V165.5C163.5 159.149 168.149 154.5 174.5 154.5C176.327 154.5 178.077 155.173 179.5 156.5L340.5 120.5C346.851 119.173 352.5 123.822 352.5 130.173V130.5C356.642 128.077 359.5 123.558 359.5 118.5V96.5Z" fill="white"/>
+</svg>
